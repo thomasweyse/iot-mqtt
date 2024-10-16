@@ -2,9 +2,15 @@
 #include <string.h>
 #include <time.h>
 #include <WiFi.h>
-#include <mqtt_client.h>
 #include "LiquidCrystal_I2C.h"
 #include "xht11.h"
+#include "PubSubClient.h"
+#include "smarthome.h"
+#include "mqttcert.h"
+#include <WiFiClientSecure.h>
+
+// init wifi secure client
+WiFiClientSecure espClient;
 
 int progress = 0;
 char getProgress(int progress);
@@ -22,27 +28,27 @@ void setup() {
     mylcd.init();
     mylcd.backlight();
 
+    espClient.setCACert(ca_cert);
+
     // Establish connection to IoT Broker
+    WiFi.begin(SSID, PASSWORD);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        printStateLCD("Init WiFi/MQTT");
+    }
 }
 
 void loop()
 {
-    if (WiFi.status() != WL_CONNECTED)
+    if (xht.receive(dht))
     {
-        printFullStateLCD("Init:","WiFi");
-        // connectToWiFi();
-    }
-    else
-    {
-      if (xht.receive(dht))
-      {
-          printTempLCD(progress);
-          progress++;
-          if(progress == 2)
-          {
+        printTempLCD(progress);
+        progress++;
+        
+        if(progress == 2)
+        {
             progress = 0;
-          }
-      }
+        }
     }
 }
 

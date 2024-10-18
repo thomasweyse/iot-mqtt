@@ -28,7 +28,8 @@ void setup() {
     mylcd.init();
     mylcd.backlight();
 
-    espClient.setCACert(ca_cert);
+    // TODO think about certs / TKW / 18.10.2024
+    // espClient.setCACert(ca_cert);
 
     // Establish connection to IoT Broker
     WiFi.begin(SSID, PASSWORD);
